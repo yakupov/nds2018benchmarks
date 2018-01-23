@@ -1,8 +1,9 @@
 package ru.itmo.nds.jmh.benchmarks;
 
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Setup;
 import ru.ifmo.nds.IIndividual;
-import ru.ifmo.nds.INonDominationLevel;
 import ru.ifmo.nds.dcns.jfby.JFBYNonDominationLevel;
 import ru.ifmo.nds.dcns.jfby.JFBYPopulation;
 import ru.ifmo.nds.impl.FitnessOnlyIndividual;
@@ -106,6 +107,7 @@ public abstract class AbstractZdtBenchmark extends AbstractDtlzZdtBenchmark {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
     private int sortUsingTreap2015(int generationId, boolean validate) {
         final TestData testData = Objects.requireNonNull(getPreparedTestData().get(generationId),
                 "no cached test data for generation id " + generationId);
