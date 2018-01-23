@@ -3,10 +3,10 @@ package ru.itmo.nds.jmh.benchmarks;
 import org.openjdk.jmh.annotations.*;
 import ru.ifmo.nds.IIndividual;
 import ru.ifmo.nds.INonDominationLevel;
-import ru.ifmo.nds.dcns.lppsn.LPPSNNonDominationLevel;
-import ru.ifmo.nds.dcns.lppsn.LPPSNPopulation;
-import ru.ifmo.nds.dcns.sorter.IncrementalPPSN;
-import ru.ifmo.nds.dcns.sorter.PPSN2014;
+import ru.ifmo.nds.dcns.jfby.JFBYNonDominationLevel;
+import ru.ifmo.nds.dcns.jfby.JFBYPopulation;
+import ru.ifmo.nds.dcns.sorter.IncrementalJFB;
+import ru.ifmo.nds.dcns.sorter.JFB2014;
 import ru.ifmo.nds.impl.FitnessOnlyIndividual;
 import ru.ifmo.nds.ndt.INode;
 import ru.ifmo.nds.ndt.LeafNode;
@@ -15,7 +15,7 @@ import ru.ifmo.nds.ndt.NdtSettings;
 import ru.itmo.nds.front_storage.DoublesGeneration;
 import ru.itmo.nds.front_storage.Front;
 import ru.itmo.nds.front_storage.FrontStorage;
-import ru.itmo.nds.jmh.benchmarks.utils.PpsnTestData;
+import ru.itmo.nds.jmh.benchmarks.utils.TestData;
 import ru.itmo.nds.util.RankedPopulation;
 
 import java.util.*;
@@ -31,14 +31,14 @@ import static ru.itmo.nds.util.ComparisonUtils.dominates;
 @Measurement(iterations = 4)
 @Fork(value = 2)
 public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
-    final IncrementalPPSN incrementalPPSN = new IncrementalPPSN();
-    private final PPSN2014 ppsn2014 = new PPSN2014();
+    final IncrementalJFB incrementalJFB = new IncrementalJFB();
+    private final JFB2014 jfb2014 = new JFB2014();
 
-    private Map<Integer, PpsnTestData> preparedTestData;
+    private Map<Integer, TestData> preparedTestData;
     private FrontStorage frontStorage;
 
     @Override
-    protected Map<Integer, PpsnTestData> getPreparedTestData() {
+    protected Map<Integer, TestData> getPreparedTestData() {
         return preparedTestData;
     }
 
@@ -62,11 +62,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
             }
             final RankedPopulation<IIndividual> rp2 = new RankedPopulation<>(individuals, rp.getRanks());
 
-            final LPPSNPopulation lppsnPopulation = new LPPSNPopulation();
+            final JFBYPopulation jfbyPopulation = new JFBYPopulation();
             generation.getFronts().stream()
                     .sorted(Comparator.comparingInt(Front::getId))
                     .map(f -> {
-                        final INonDominationLevel level = new LPPSNNonDominationLevel(incrementalPPSN);
+                        final INonDominationLevel level = new JFBYNonDominationLevel(incrementalJFB);
                         level.getMembers().addAll(f.getFitnesses().stream().map(FitnessOnlyIndividual::new).collect(Collectors.toList()));
 
                         (level.getMembers()).sort((o1, o2) -> {
@@ -81,7 +81,7 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
 
                         return level;
                     })
-                    .forEach(level -> lppsnPopulation.getLevels().add(level));
+                    .forEach(level -> jfbyPopulation.getLevels().add(level));
 
             final NdtSettings ndtSettings = new NdtSettings(10, nextAddend.length);
             final Comparator<IIndividual> comparator = (o1, o2) -> dominates(o1.getObjectives(), o2.getObjectives(), ndtSettings.getDimensionsCount());
@@ -107,8 +107,8 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
                     })
                     .collect(Collectors.toList());
 
-            preparedTestData.put(i, new PpsnTestData(new FitnessOnlyIndividual(nextAddend), rp2, null,
-                    enluIndividuals, enluLayers, lppsnPopulation, ndtManagedPopulation));
+            preparedTestData.put(i, new TestData(new FitnessOnlyIndividual(nextAddend), rp2, null,
+                    enluIndividuals, enluLayers, jfbyPopulation, ndtManagedPopulation));
         }
     }
 
@@ -118,18 +118,18 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen0() {
-        return sortOneGeneration(0, incrementalPPSN);
+    public int incJfbFastSweepGen0() {
+        return sortOneGeneration(0, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen0() {
-        return sortOneGeneration(0, ppsn2014);
+    public int incJfbGen0() {
+        return sortOneGeneration(0, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen0() {
-        return sortUsingLevelPPSN(0);
+    public int jfbyGen0() {
+        return sortUsingJFBY(0);
     }
 
     @Benchmark
@@ -138,8 +138,8 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int oldPpsnGen0() {
-        return sortFullyUsingPpsn(0);
+    public int oldJfbGen0() {
+        return sortFullyUsingJfb(0);
     }
 
     @Benchmark
@@ -148,23 +148,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen1000() {
-        return sortOneGeneration(1000, incrementalPPSN);
+    public int incJfbFastSweepGen1000() {
+        return sortOneGeneration(1000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen1000() {
-        return sortOneGeneration(1000, ppsn2014);
+    public int incJfbGen1000() {
+        return sortOneGeneration(1000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen1000() {
-        return sortUsingLevelPPSN(1000);
+    public int jfbyGen1000() {
+        return sortUsingJFBY(1000);
     }
 
     @Benchmark
-    public int oldPpsnGen1000() {
-        return sortFullyUsingPpsn(1000);
+    public int oldJfbGen1000() {
+        return sortFullyUsingJfb(1000);
     }
 
     @Benchmark
@@ -173,23 +173,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen2000() {
-        return sortOneGeneration(2000, incrementalPPSN);
+    public int incJfbFastSweepGen2000() {
+        return sortOneGeneration(2000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen2000() {
-        return sortOneGeneration(2000, ppsn2014);
+    public int incJfbGen2000() {
+        return sortOneGeneration(2000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen2000() {
-        return sortUsingLevelPPSN(2000);
+    public int jfbyGen2000() {
+        return sortUsingJFBY(2000);
     }
 
     @Benchmark
-    public int oldPpsnGen2000() {
-        return sortFullyUsingPpsn(2000);
+    public int oldJfbGen2000() {
+        return sortFullyUsingJfb(2000);
     }
 
     @Benchmark
@@ -198,23 +198,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen3000() {
-        return sortOneGeneration(3000, incrementalPPSN);
+    public int incJfbFastSweepGen3000() {
+        return sortOneGeneration(3000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen3000() {
-        return sortOneGeneration(3000, ppsn2014);
+    public int incJfbGen3000() {
+        return sortOneGeneration(3000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen3000() {
-        return sortUsingLevelPPSN(3000);
+    public int jfbyGen3000() {
+        return sortUsingJFBY(3000);
     }
 
     @Benchmark
-    public int oldPpsnGen3000() {
-        return sortFullyUsingPpsn(3000);
+    public int oldJfbGen3000() {
+        return sortFullyUsingJfb(3000);
     }
 
     @Benchmark
@@ -223,23 +223,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen4000() {
-        return sortOneGeneration(4000, incrementalPPSN);
+    public int incJfbFastSweepGen4000() {
+        return sortOneGeneration(4000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen4000() {
-        return sortOneGeneration(4000, ppsn2014);
+    public int incJfbGen4000() {
+        return sortOneGeneration(4000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen4000() {
-        return sortUsingLevelPPSN(4000);
+    public int jfbyGen4000() {
+        return sortUsingJFBY(4000);
     }
 
     @Benchmark
-    public int oldPpsnGen4000() {
-        return sortFullyUsingPpsn(4000);
+    public int oldJfbGen4000() {
+        return sortFullyUsingJfb(4000);
     }
 
     @Benchmark
@@ -248,23 +248,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen5000() {
-        return sortOneGeneration(5000, incrementalPPSN);
+    public int incJfbFastSweepGen5000() {
+        return sortOneGeneration(5000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen5000() {
-        return sortOneGeneration(5000, ppsn2014);
+    public int incJfbGen5000() {
+        return sortOneGeneration(5000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen5000() {
-        return sortUsingLevelPPSN(5000);
+    public int jfbyGen5000() {
+        return sortUsingJFBY(5000);
     }
 
     @Benchmark
-    public int oldPpsnGen5000() {
-        return sortFullyUsingPpsn(5000);
+    public int oldJfbGen5000() {
+        return sortFullyUsingJfb(5000);
     }
 
     @Benchmark
@@ -273,23 +273,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen6000() {
-        return sortOneGeneration(6000, incrementalPPSN);
+    public int incJfbFastSweepGen6000() {
+        return sortOneGeneration(6000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen6000() {
-        return sortOneGeneration(6000, ppsn2014);
+    public int incJfbGen6000() {
+        return sortOneGeneration(6000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen6000() {
-        return sortUsingLevelPPSN(6000);
+    public int jfbyGen6000() {
+        return sortUsingJFBY(6000);
     }
 
     @Benchmark
-    public int oldPpsnGen6000() {
-        return sortFullyUsingPpsn(6000);
+    public int oldJfbGen6000() {
+        return sortFullyUsingJfb(6000);
     }
 
     @Benchmark
@@ -298,23 +298,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen7000() {
-        return sortOneGeneration(7000, incrementalPPSN);
+    public int incJfbFastSweepGen7000() {
+        return sortOneGeneration(7000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen7000() {
-        return sortOneGeneration(7000, ppsn2014);
+    public int incJfbGen7000() {
+        return sortOneGeneration(7000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen7000() {
-        return sortUsingLevelPPSN(7000);
+    public int jfbyGen7000() {
+        return sortUsingJFBY(7000);
     }
 
     @Benchmark
-    public int oldPpsnGen7000() {
-        return sortFullyUsingPpsn(7000);
+    public int oldJfbGen7000() {
+        return sortFullyUsingJfb(7000);
     }
 
     @Benchmark
@@ -323,23 +323,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen8000() {
-        return sortOneGeneration(8000, incrementalPPSN);
+    public int incJfbFastSweepGen8000() {
+        return sortOneGeneration(8000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen8000() {
-        return sortOneGeneration(8000, ppsn2014);
+    public int incJfbGen8000() {
+        return sortOneGeneration(8000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen8000() {
-        return sortUsingLevelPPSN(8000);
+    public int jfbyGen8000() {
+        return sortUsingJFBY(8000);
     }
 
     @Benchmark
-    public int oldPpsnGen8000() {
-        return sortFullyUsingPpsn(8000);
+    public int oldJfbGen8000() {
+        return sortFullyUsingJfb(8000);
     }
 
     @Benchmark
@@ -348,23 +348,23 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
-    public int incPpsnFastSweepGen9000() {
-        return sortOneGeneration(9000, incrementalPPSN);
+    public int incJfbFastSweepGen9000() {
+        return sortOneGeneration(9000, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnGen9000() {
-        return sortOneGeneration(9000, ppsn2014);
+    public int incJfbGen9000() {
+        return sortOneGeneration(9000, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnGen9000() {
-        return sortUsingLevelPPSN(9000);
+    public int jfbyGen9000() {
+        return sortUsingJFBY(9000);
     }
 
     @Benchmark
-    public int oldPpsnGen9000() {
-        return sortFullyUsingPpsn(9000);
+    public int oldJfbGen9000() {
+        return sortFullyUsingJfb(9000);
     }
 
 }

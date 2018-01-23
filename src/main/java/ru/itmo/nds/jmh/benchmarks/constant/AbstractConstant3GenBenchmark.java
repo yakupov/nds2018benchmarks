@@ -13,23 +13,23 @@ public abstract class AbstractConstant3GenBenchmark extends AbstractConstantBenc
     }
 
     @Benchmark
-    public int incPpsnFastSweepDataset0() {
-        return sortOneGeneration(0, incrementalPPSN);
+    public int incJfbFastSweepDataset0() {
+        return sortOneGeneration(0, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnDataset0() {
-        return sortOneGeneration(0, ppsn2014);
+    public int incJfbDataset0() {
+        return sortOneGeneration(0, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnDataset0() {
-        return sortUsingLevelPPSN(0);
+    public int jfbyDataset0() {
+        return sortUsingJFBY(0);
     }
 
     @Benchmark
-    public int oldPpsnDataset0() {
-        return sortFullyUsingPpsn(0);
+    public int oldJfbDataset0() {
+        return sortFullyUsingJfb(0);
     }
 
     @Benchmark
@@ -38,23 +38,23 @@ public abstract class AbstractConstant3GenBenchmark extends AbstractConstantBenc
     }
 
     @Benchmark
-    public int incPpsnFastSweepDataset1() {
-        return sortOneGeneration(1, incrementalPPSN);
+    public int incJfbFastSweepDataset1() {
+        return sortOneGeneration(1, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnDataset1() {
-        return sortOneGeneration(1, ppsn2014);
+    public int incJfbDataset1() {
+        return sortOneGeneration(1, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnDataset1() {
-        return sortUsingLevelPPSN(1);
+    public int jfbyDataset1() {
+        return sortUsingJFBY(1);
     }
 
     @Benchmark
-    public int oldPpsnDataset1() {
-        return sortFullyUsingPpsn(1);
+    public int oldJfbDataset1() {
+        return sortFullyUsingJfb(1);
     }
     
     @Benchmark
@@ -63,22 +63,22 @@ public abstract class AbstractConstant3GenBenchmark extends AbstractConstantBenc
     }
 
     @Benchmark
-    public int incPpsnFastSweepDataset2() {
-        return sortOneGeneration(2, incrementalPPSN);
+    public int incJfbFastSweepDataset2() {
+        return sortOneGeneration(2, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnDataset2() {
-        return sortOneGeneration(2, ppsn2014);
+    public int incJfbDataset2() {
+        return sortOneGeneration(2, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnDataset2() {
-        return sortUsingLevelPPSN(2);
+    public int jfbyDataset2() {
+        return sortUsingJFBY(2);
     }
 
     @Benchmark
-    public int oldPpsnDataset2() {
-        return sortFullyUsingPpsn(2);
+    public int oldJfbDataset2() {
+        return sortFullyUsingJfb(2);
     }
 }

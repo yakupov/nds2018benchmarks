@@ -13,22 +13,22 @@ public abstract class AbstractConstant1GenBenchmark extends AbstractConstantBenc
     }
 
     @Benchmark
-    public int incPpsnFastSweepDataset0() {
-        return sortOneGeneration(0, incrementalPPSN);
+    public int incJfbFastSweepDataset0() {
+        return sortOneGeneration(0, incrementalJFB);
     }
 
     @Benchmark
-    public int incPpsnDataset0() {
-        return sortOneGeneration(0, ppsn2014);
+    public int incJfbDataset0() {
+        return sortOneGeneration(0, jfb2014);
     }
 
     @Benchmark
-    public int levelPpsnDataset0() {
-        return sortUsingLevelPPSN(0);
+    public int jfbyDataset0() {
+        return sortUsingJFBY(0);
     }
 
     @Benchmark
-    public int oldPpsnDataset0() {
-        return sortFullyUsingPpsn(0);
+    public int oldJfbDataset0() {
+        return sortFullyUsingJfb(0);
     }
 }

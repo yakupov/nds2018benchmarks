@@ -3,8 +3,8 @@ package ru.itmo.nds.jmh.benchmarks;
 import org.openjdk.jmh.annotations.*;
 import ru.ifmo.nds.IIndividual;
 import ru.ifmo.nds.INonDominationLevel;
-import ru.ifmo.nds.dcns.lppsn.LPPSNNonDominationLevel;
-import ru.ifmo.nds.dcns.lppsn.LPPSNPopulation;
+import ru.ifmo.nds.dcns.jfby.JFBYNonDominationLevel;
+import ru.ifmo.nds.dcns.jfby.JFBYPopulation;
 import ru.ifmo.nds.impl.FitnessOnlyIndividual;
 import ru.ifmo.nds.ndt.INode;
 import ru.ifmo.nds.ndt.LeafNode;
@@ -13,7 +13,7 @@ import ru.ifmo.nds.ndt.NdtSettings;
 import ru.itmo.nds.front_storage.DoublesGeneration;
 import ru.itmo.nds.front_storage.Front;
 import ru.itmo.nds.front_storage.FrontStorage;
-import ru.itmo.nds.jmh.benchmarks.utils.PpsnTestData;
+import ru.itmo.nds.jmh.benchmarks.utils.TestData;
 import ru.itmo.nds.reference.treap2015.Double2DIndividual;
 import ru.itmo.nds.reference.treap2015.TreapPopulation;
 import ru.itmo.nds.util.RankedPopulation;
@@ -24,11 +24,11 @@ import java.util.stream.Collectors;
 import static ru.itmo.nds.util.ComparisonUtils.dominates;
 
 public abstract class AbstractZdtBenchmark extends AbstractDtlzZdtBenchmark {
-    private Map<Integer, PpsnTestData> preparedTestData;
+    private Map<Integer, TestData> preparedTestData;
     private FrontStorage frontStorage;
 
     @Override
-    protected Map<Integer, PpsnTestData> getPreparedTestData() {
+    protected Map<Integer, TestData> getPreparedTestData() {
         return preparedTestData;
     }
 
@@ -51,11 +51,11 @@ public abstract class AbstractZdtBenchmark extends AbstractDtlzZdtBenchmark {
             }
             final RankedPopulation<IIndividual> rp2 = new RankedPopulation<>(individuals, rp.getRanks());
 
-            final LPPSNPopulation lppsnPopulation = new LPPSNPopulation();
+            final JFBYPopulation jfbyPopulation = new JFBYPopulation();
             generation.getFronts().stream()
                     .sorted(Comparator.comparingInt(Front::getId))
                     .map(f -> {
-                        final INonDominationLevel level = new LPPSNNonDominationLevel(incrementalPPSN);
+                        final INonDominationLevel level = new JFBYNonDominationLevel(incrementalJFB);
                         level.getMembers().addAll(f.getFitnesses().stream().map(FitnessOnlyIndividual::new).collect(Collectors.toList()));
 
                         (level.getMembers()).sort((o1, o2) -> {
@@ -70,7 +70,7 @@ public abstract class AbstractZdtBenchmark extends AbstractDtlzZdtBenchmark {
 
                         return level;
                     })
-                    .forEach(level -> lppsnPopulation.getLevels().add(level));
+                    .forEach(level -> jfbyPopulation.getLevels().add(level));
 
             final NdtSettings ndtSettings = new NdtSettings(5, nextAddend.length);
             final Comparator<IIndividual> comparator = (o1, o2) -> dominates(o1.getObjectives(), o2.getObjectives(), ndtSettings.getDimensionsCount());
@@ -103,13 +103,13 @@ public abstract class AbstractZdtBenchmark extends AbstractDtlzZdtBenchmark {
                 }
             }
 
-            preparedTestData.put(i, new PpsnTestData(new FitnessOnlyIndividual(nextAddend), rp2, treapPopulation,
-                    enluIndividuals, enluLayers, lppsnPopulation, ndtManagedPopulation));
+            preparedTestData.put(i, new TestData(new FitnessOnlyIndividual(nextAddend), rp2, treapPopulation,
+                    enluIndividuals, enluLayers, jfbyPopulation, ndtManagedPopulation));
         }
     }
 
     private int sortUsingTreap2015(int generationId, boolean validate) {
-        final PpsnTestData testData = Objects.requireNonNull(getPreparedTestData().get(generationId),
+        final TestData testData = Objects.requireNonNull(getPreparedTestData().get(generationId),
                 "no cached test data for generation id " + generationId);
 
         final TreapPopulation tp = testData.getTreapPopulation();
