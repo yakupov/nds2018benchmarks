@@ -66,10 +66,9 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
             generation.getFronts().stream()
                     .sorted(Comparator.comparingInt(Front::getId))
                     .map(f -> {
-                        final INonDominationLevel level = new JFBYNonDominationLevel(incrementalJFB);
-                        level.getMembers().addAll(f.getFitnesses().stream().map(FitnessOnlyIndividual::new).collect(Collectors.toList()));
-
-                        (level.getMembers()).sort((o1, o2) -> {
+                        final List<IIndividual> members = new ArrayList<>();
+                        members.addAll(f.getFitnesses().stream().map(FitnessOnlyIndividual::new).collect(Collectors.toList()));
+                        members.sort((o1, o2) -> {
                             for (int objIndex = 0; objIndex < o1.getObjectives().length; ++objIndex) {
                                 if (o1.getObjectives()[objIndex] < o2.getObjectives()[objIndex])
                                     return -1;
@@ -78,8 +77,7 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
                             }
                             return 0;
                         });
-
-                        return level;
+                        return new JFBYNonDominationLevel(incrementalJFB, members);
                     })
                     .forEach(level -> jfbyPopulation.getLevels().add(level));
 
