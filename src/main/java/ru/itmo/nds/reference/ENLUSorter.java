@@ -13,10 +13,6 @@ public class ENLUSorter {
     private final Set<double[]> individuals;
     private final List<Set<double[]>> ranks;
 
-    public ENLUSorter() {
-        this(new HashSet<>(), new ArrayList<>());
-    }
-
     public ENLUSorter(Set<double[]> individuals, List<Set<double[]>> ranks) {
         this.individuals = individuals;
         this.ranks = ranks;

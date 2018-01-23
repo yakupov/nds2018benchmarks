@@ -2,7 +2,6 @@ package ru.itmo.nds.jmh.benchmarks.constant;
 
 import org.openjdk.jmh.annotations.*;
 import ru.ifmo.nds.IIndividual;
-import ru.ifmo.nds.INonDominationLevel;
 import ru.ifmo.nds.dcns.jfby.JFBYNonDominationLevel;
 import ru.ifmo.nds.dcns.jfby.JFBYPopulation;
 import ru.ifmo.nds.dcns.sorter.IncrementalJFB;

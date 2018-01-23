@@ -1,34 +1,29 @@
 package ru.itmo.nds.reference.treap2015;
 
+@SuppressWarnings("RedundantIfStatement")
 public class Treap {
     public static class Treaps {
         Treap l, r;
-        public Treaps() {};
-        public Treaps(Treap l, Treap r) {
-            super();
-            this.l = l;
-            this.r = r;
-        }
+        Treaps() {}
 
         public String toString() {
             return "l=" + String.valueOf(l) + ", r=" + String.valueOf(r);
         }
     }
 
-    public Double2DIndividual x;
-    public int y;
+    final Double2DIndividual x;
+    private final int y;
+    final Treap left;
+    final Treap right;
 
-    public Treap left;
-    public Treap right;
-
-    public Treap(Double2DIndividual x, int y, Treap left, Treap right) {
+    Treap(Double2DIndividual x, int y, Treap left, Treap right) {
         this.x = x;
         this.y = y;
         this.left = left;
         this.right = right;
     }
 
-    public static Treap merge(Treap l, Treap r) {
+    static Treap merge(Treap l, Treap r) {
         if (l == null) return r;
         if (r == null) return l;
 
@@ -41,7 +36,7 @@ public class Treap {
         }
     }
 
-    public Treaps splitX(Double2DIndividual x) {
+    Treaps splitX(Double2DIndividual x) {
         Treaps res = new Treaps();
         Treaps t = new Treaps();
         if (this.x.compareX1(x) < 0) {
@@ -67,10 +62,8 @@ public class Treap {
 
     /**
      * same as split X - members of r have greater x1 than members of l
-     * @param x
-     * @return
      */
-    public Treaps splitY(Double2DIndividual x) {
+    Treaps splitY(Double2DIndividual x) {
         Treaps res = new Treaps();
         Treaps t = new Treaps();
         if (this.x.compareX2(x) >= 0) {
@@ -93,8 +86,8 @@ public class Treap {
         return res;
     }
 
-    public boolean dominatesSomebody(Double2DIndividual nInd) {
-        Treaps split = splitX(nInd);
+    boolean dominatesSomebody(Double2DIndividual nInd) {
+        final Treaps split = splitX(nInd);
         if (split.l != null && nInd.compareDom(split.l.getMax()) < 0)
             return true;
         if (split.r != null && nInd.compareDom(split.r.getMin()) < 0)
@@ -102,8 +95,8 @@ public class Treap {
         return false;
     }
 
-    public boolean dominatedBySomebody(Double2DIndividual nInd) {
-        Treaps split = splitX(nInd);
+    boolean dominatedBySomebody(Double2DIndividual nInd) {
+        final Treaps split = splitX(nInd);
         //System.err.println("DBS: " + split);
         //System.err.println("_DBS: " + this);
 
@@ -114,7 +107,7 @@ public class Treap {
         return false;
     }
 
-    public Double2DIndividual getMinP() {
+    Double2DIndividual getMinP() {
         Treap l = this;
         while (l.left != null)
             l = l.left;
@@ -124,7 +117,7 @@ public class Treap {
         return new Double2DIndividual(l.x.getX1(), r.x.getX2());
     }
 
-    public Double2DIndividual getMin() {
+    private Double2DIndividual getMin() {
         Treap l = this;
         while (l.left != null)
             l = l.left;
@@ -139,13 +132,15 @@ public class Treap {
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         toString(sb);
         return sb.toString();
     }
 
-    protected void toString(StringBuilder sb) {
-        sb.append("[" + x.toString() + "]; ");
+    private void toString(StringBuilder sb) {
+        sb.append("[")
+                .append(x.toString())
+                .append("]; ");
         if (left != null)
             left.toString(sb);
         if (right != null)

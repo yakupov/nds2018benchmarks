@@ -15,7 +15,7 @@ public class TreapPopulation {
         this(new HashSet<>(), new ArrayList<>());
     }
 
-    public TreapPopulation(Set<Double2DIndividual> individuals, List<Treap> ranks) {
+    private TreapPopulation(Set<Double2DIndividual> individuals, List<Treap> ranks) {
         this.individuals = individuals;
         this.ranks = ranks;
     }
@@ -32,7 +32,7 @@ public class TreapPopulation {
         return currRank;
     }
 
-    protected int determineRank(Double2DIndividual nInd) {
+    private int determineRank(Double2DIndividual nInd) {
         int currRank = 0;
         int l = 0;
         int r = ranks.size() - 1;
@@ -62,6 +62,7 @@ public class TreapPopulation {
             ranks.add(nTreap);
         } else if (nInd.compareDom(ranks.get(rank).getMinP()) < 0) {
             ranks.add(rank, nTreap);
+            //noinspection UnnecessaryReturnStatement
             return;
         } else {
             int i = 0;
@@ -109,9 +110,9 @@ public class TreapPopulation {
     }
 
     public static class IndWithRank {
-        Double2DIndividual ind;
-        int rank;
-        public IndWithRank(Double2DIndividual ind, int rank) {
+        final Double2DIndividual ind;
+        final int rank;
+        IndWithRank(Double2DIndividual ind, int rank) {
             super();
             this.ind = ind;
             this.rank = rank;
@@ -122,14 +123,15 @@ public class TreapPopulation {
         }
     }
 
+    @SuppressWarnings("unused")
     public IndWithRank getRandWithRank() {
         if (individuals.size() == 0)
             throw new RuntimeException("Can't get random individual from empty population");
-        Double2DIndividual randInd = (Double2DIndividual) individuals.toArray()[random.nextInt(individuals.size())];
+        final Double2DIndividual randInd = (Double2DIndividual) individuals.toArray()[random.nextInt(individuals.size())];
         return new IndWithRank(randInd, detRankOfExPoint(randInd));
     }
 
-    protected int detRankOfExPoint(Double2DIndividual ind) {
+    private int detRankOfExPoint(Double2DIndividual ind) {
         int r = ranks.size() - 1;
         int l = 0;
         int result = -1;
@@ -166,17 +168,6 @@ public class TreapPopulation {
 
         if (result > 0)
             return result;
-        throw new RuntimeException("Can't determine rank for " + ind.toString());
-    }
-
-
-    protected int detRankOfExPointDumb(Double2DIndividual ind) {
-        for (int l = 0; l < ranks.size(); ++l) {
-            boolean dominated = ranks.get(l).dominatedBySomebody(ind);
-            boolean dominates = ranks.get(l).dominatesSomebody(ind);
-            if (!dominates && !dominated)
-                return l;
-        }
         throw new RuntimeException("Can't determine rank for " + ind.toString());
     }
 

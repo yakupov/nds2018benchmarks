@@ -36,8 +36,7 @@ public abstract class AbstractBenchmark {
         final TestData testData = Objects.requireNonNull(getPreparedTestData().get(generationId),
                 "no cached test data for generation id " + generationId);
         final IManagedPopulation population = testData.getJfbyPopulation();
-        final int rs = population.addIndividual(testData.getNextAdddend());
-        return rs;
+        return population.addIndividual(testData.getNextAdddend());
     }
 
     int sortUsingNdt(int generationId) {

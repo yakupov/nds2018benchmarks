@@ -2,7 +2,6 @@ package ru.itmo.nds.jmh.benchmarks;
 
 import org.openjdk.jmh.annotations.*;
 import ru.ifmo.nds.IIndividual;
-import ru.ifmo.nds.INonDominationLevel;
 import ru.ifmo.nds.dcns.jfby.JFBYNonDominationLevel;
 import ru.ifmo.nds.dcns.jfby.JFBYPopulation;
 import ru.ifmo.nds.dcns.sorter.IncrementalJFB;
@@ -161,6 +160,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int ndtGen1000() {
+        return sortUsingNdt(1000);
+    }
+
+    @Benchmark
     public int oldJfbGen1000() {
         return sortFullyUsingJfb(1000);
     }
@@ -183,6 +187,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen2000() {
         return sortUsingJFBY(2000);
+    }
+
+    @Benchmark
+    public int ndtGen2000() {
+        return sortUsingNdt(2000);
     }
 
     @Benchmark
@@ -211,6 +220,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int ndtGen3000() {
+        return sortUsingNdt(3000);
+    }
+
+    @Benchmark
     public int oldJfbGen3000() {
         return sortFullyUsingJfb(3000);
     }
@@ -233,6 +247,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen4000() {
         return sortUsingJFBY(4000);
+    }
+
+    @Benchmark
+    public int ndtGen4000() {
+        return sortUsingNdt(4000);
     }
 
     @Benchmark
@@ -261,6 +280,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int ndtGen5000() {
+        return sortUsingNdt(5000);
+    }
+
+    @Benchmark
     public int oldJfbGen5000() {
         return sortFullyUsingJfb(5000);
     }
@@ -283,6 +307,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen6000() {
         return sortUsingJFBY(6000);
+    }
+
+    @Benchmark
+    public int ndtGen6000() {
+        return sortUsingNdt(6000);
     }
 
     @Benchmark
@@ -311,6 +340,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int ndtGen7000() {
+        return sortUsingNdt(7000);
+    }
+
+    @Benchmark
     public int oldJfbGen7000() {
         return sortFullyUsingJfb(7000);
     }
@@ -336,6 +370,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int ndtGen8000() {
+        return sortUsingNdt(8000);
+    }
+
+    @Benchmark
     public int oldJfbGen8000() {
         return sortFullyUsingJfb(8000);
     }
@@ -358,6 +397,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen9000() {
         return sortUsingJFBY(9000);
+    }
+
+    @Benchmark
+    public int ndtGen9000() {
+        return sortUsingNdt(9000);
     }
 
     @Benchmark
