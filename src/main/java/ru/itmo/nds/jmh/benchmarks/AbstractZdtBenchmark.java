@@ -103,7 +103,7 @@ public abstract class AbstractZdtBenchmark extends AbstractDtlzZdtBenchmark {
             }
 
             preparedTestData.put(i, new TestData(new FitnessOnlyIndividual(nextAddend), rp2, treapPopulation,
-                    enluIndividuals, enluLayers, jfbyPopulation, ndtManagedPopulation));
+                    enluIndividuals, enluLayers, jfbyPopulation, null, null, ndtManagedPopulation));
         }
     }
 

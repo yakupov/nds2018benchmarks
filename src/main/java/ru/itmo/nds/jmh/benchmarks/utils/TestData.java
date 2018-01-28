@@ -1,6 +1,7 @@
 package ru.itmo.nds.jmh.benchmarks.utils;
 
 import ru.ifmo.nds.IIndividual;
+import ru.ifmo.nds.dcns.concurrent.CJFBYPopulation;
 import ru.ifmo.nds.dcns.jfby.JFBYPopulation;
 import ru.ifmo.nds.ndt.NdtManagedPopulation;
 import ru.itmo.nds.reference.treap2015.TreapPopulation;
@@ -16,6 +17,8 @@ public class TestData {
     private final Set<double[]> enluIndividuals;
     private final List<Set<double[]>> enluLayers;
     private final JFBYPopulation jfbyPopulation;
+    private final CJFBYPopulation cjfbyPopulation;
+    private final CJFBYPopulation cjfbyPopulationAlt;
     private final NdtManagedPopulation ndtManagedPopulation;
 
     /**
@@ -27,6 +30,8 @@ public class TestData {
      * @param enluIndividuals      For ENLU
      * @param enluLayers           For ENLU
      * @param jfbyPopulation       For JFBY
+     * @param cjfbyPopulation      For CJFBY
+     * @param cjfbyPopulationAlt   For CJFBY, another point insertion algorithm
      * @param ndtManagedPopulation For NDT
      */
     public TestData(IIndividual nextAdddend,
@@ -35,13 +40,15 @@ public class TestData {
                     Set<double[]> enluIndividuals,
                     List<Set<double[]>> enluLayers,
                     JFBYPopulation jfbyPopulation,
-                    NdtManagedPopulation ndtManagedPopulation) {
+                    CJFBYPopulation cjfbyPopulation, CJFBYPopulation cjfbyPopulationAlt, NdtManagedPopulation ndtManagedPopulation) {
         this.nextAdddend = nextAdddend;
         this.rankedPopulation = rankedPopulation;
         this.treapPopulation = treapPopulation;
         this.enluIndividuals = enluIndividuals;
         this.enluLayers = enluLayers;
         this.jfbyPopulation = jfbyPopulation;
+        this.cjfbyPopulation = cjfbyPopulation;
+        this.cjfbyPopulationAlt = cjfbyPopulationAlt;
         this.ndtManagedPopulation = ndtManagedPopulation;
     }
 
@@ -67,6 +74,14 @@ public class TestData {
 
     public JFBYPopulation getJfbyPopulation() {
         return jfbyPopulation;
+    }
+
+    public CJFBYPopulation getCjfbyPopulation() {
+        return cjfbyPopulation;
+    }
+
+    public CJFBYPopulation getCjfbyPopulationAlt() {
+        return cjfbyPopulationAlt;
     }
 
     public NdtManagedPopulation getNdtManagedPopulation() {

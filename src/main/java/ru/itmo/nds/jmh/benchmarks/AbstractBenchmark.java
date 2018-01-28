@@ -50,6 +50,20 @@ public abstract class AbstractBenchmark {
         return sortUsingJFBY(generationId, false);
     }
 
+    int sortUsingCJFBY(int generationId) {
+        final TestData testData = Objects.requireNonNull(getPreparedTestData().get(generationId),
+                "no cached test data for generation id " + generationId);
+        final IManagedPopulation population = testData.getCjfbyPopulation();
+        return population.addIndividual(testData.getNextAdddend());
+    }
+
+    int sortUsingCJFBYAlt(int generationId) {
+        final TestData testData = Objects.requireNonNull(getPreparedTestData().get(generationId),
+                "no cached test data for generation id " + generationId);
+        final IManagedPopulation population = testData.getCjfbyPopulationAlt();
+        return population.addIndividual(testData.getNextAdddend());
+    }
+
     int sortUsingEnlu(int generationId, boolean validate) {
         final TestData testData = Objects.requireNonNull(getPreparedTestData().get(generationId),
                 "no cached test data for generation id " + generationId);

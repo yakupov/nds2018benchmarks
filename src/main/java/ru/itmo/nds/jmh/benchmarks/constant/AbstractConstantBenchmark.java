@@ -114,7 +114,7 @@ public abstract class AbstractConstantBenchmark extends AbstractBenchmark {
                     .collect(Collectors.toList());
 
             preparedTestData.put(i, new TestData(new FitnessOnlyIndividual(nextAddend), rp2, null,
-                    enluIndividuals, enluLayers, jfbyPopulation, ndtManagedPopulation));
+                    enluIndividuals, enluLayers, jfbyPopulation, null, null, ndtManagedPopulation));
         }
     }
 }

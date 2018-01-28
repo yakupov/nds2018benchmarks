@@ -2,6 +2,8 @@ package ru.itmo.nds.jmh.benchmarks;
 
 import org.openjdk.jmh.annotations.*;
 import ru.ifmo.nds.IIndividual;
+import ru.ifmo.nds.INonDominationLevel;
+import ru.ifmo.nds.dcns.concurrent.CJFBYPopulation;
 import ru.ifmo.nds.dcns.jfby.JFBYNonDominationLevel;
 import ru.ifmo.nds.dcns.jfby.JFBYPopulation;
 import ru.ifmo.nds.dcns.sorter.IncrementalJFB;
@@ -18,7 +20,9 @@ import ru.itmo.nds.jmh.benchmarks.utils.TestData;
 import ru.itmo.nds.util.RankedPopulation;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static ru.itmo.nds.util.ComparisonUtils.dominates;
@@ -80,6 +84,31 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
                     })
                     .forEach(level -> jfbyPopulation.getLevels().add(level));
 
+            final CopyOnWriteArrayList<AtomicReference<INonDominationLevel>> cjfbyLevels = new CopyOnWriteArrayList<>();
+            final CopyOnWriteArrayList<AtomicReference<INonDominationLevel>> cjfbyAltLevels = new CopyOnWriteArrayList<>();
+            generation.getFronts().stream()
+                    .sorted(Comparator.comparingInt(Front::getId))
+                    .map(f -> {
+                        final List<IIndividual> members = new ArrayList<>();
+                        members.addAll(f.getFitnesses().stream().map(FitnessOnlyIndividual::new).collect(Collectors.toList()));
+                        members.sort((o1, o2) -> {
+                            for (int objIndex = 0; objIndex < o1.getObjectives().length; ++objIndex) {
+                                if (o1.getObjectives()[objIndex] < o2.getObjectives()[objIndex])
+                                    return -1;
+                                else if (o1.getObjectives()[objIndex] > o2.getObjectives()[objIndex])
+                                    return 1;
+                            }
+                            return 0;
+                        });
+                        return new AtomicReference<INonDominationLevel>(new JFBYNonDominationLevel(incrementalJFB, members));
+                    })
+                    .forEach((e) -> {
+                        cjfbyLevels.add(e);
+                        cjfbyAltLevels.add(e);
+                    });
+            final CJFBYPopulation cjfbyPopulation = new CJFBYPopulation(cjfbyLevels, Integer.MAX_VALUE, false);
+            final CJFBYPopulation cjfbyAltPopulation = new CJFBYPopulation(cjfbyLevels, Integer.MAX_VALUE, true);
+
             final NdtSettings ndtSettings = new NdtSettings(10, nextAddend.length);
             final Comparator<IIndividual> comparator = (o1, o2) -> dominates(o1.getObjectives(), o2.getObjectives(), ndtSettings.getDimensionsCount());
             final NdtManagedPopulation ndtManagedPopulation = new NdtManagedPopulation(comparator, ndtSettings);
@@ -105,7 +134,7 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
                     .collect(Collectors.toList());
 
             preparedTestData.put(i, new TestData(new FitnessOnlyIndividual(nextAddend), rp2, null,
-                    enluIndividuals, enluLayers, jfbyPopulation, ndtManagedPopulation));
+                    enluIndividuals, enluLayers, jfbyPopulation, cjfbyPopulation, cjfbyAltPopulation, ndtManagedPopulation));
         }
     }
 
@@ -127,6 +156,16 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen0() {
         return sortUsingJFBY(0);
+    }
+
+    @Benchmark
+    public int cjfbyGen0() {
+        return sortUsingCJFBY(0);
+    }
+
+    @Benchmark
+    public int cjfbyAltGen0() {
+        return sortUsingCJFBYAlt(0);
     }
 
     @Benchmark
@@ -160,6 +199,17 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int cjfbyGen1000() {
+        return sortUsingCJFBY(1000);
+    }
+
+    //TODO: more benchmarks
+    @Benchmark
+    public int cjfbyAltGen1000() {
+        return sortUsingCJFBYAlt(1000);
+    }
+
+    @Benchmark
     public int ndtGen1000() {
         return sortUsingNdt(1000);
     }
@@ -187,6 +237,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen2000() {
         return sortUsingJFBY(2000);
+    }
+
+    @Benchmark
+    public int cjfbyGen2000() {
+        return sortUsingCJFBY(2000);
     }
 
     @Benchmark
@@ -220,6 +275,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int cjfbyGen3000() {
+        return sortUsingCJFBY(3000);
+    }
+
+    @Benchmark
     public int ndtGen3000() {
         return sortUsingNdt(3000);
     }
@@ -247,6 +307,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen4000() {
         return sortUsingJFBY(4000);
+    }
+
+    @Benchmark
+    public int cjfbyGen4000() {
+        return sortUsingCJFBY(4000);
     }
 
     @Benchmark
@@ -280,6 +345,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int cjfbyGen5000() {
+        return sortUsingCJFBY(5000);
+    }
+
+    @Benchmark
     public int ndtGen5000() {
         return sortUsingNdt(5000);
     }
@@ -307,6 +377,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen6000() {
         return sortUsingJFBY(6000);
+    }
+
+    @Benchmark
+    public int cjfbyGen6000() {
+        return sortUsingCJFBY(6000);
     }
 
     @Benchmark
@@ -340,6 +415,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int cjfbyGen7000() {
+        return sortUsingCJFBY(7000);
+    }
+
+    @Benchmark
     public int ndtGen7000() {
         return sortUsingNdt(7000);
     }
@@ -370,6 +450,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     }
 
     @Benchmark
+    public int cjfbyGen8000() {
+        return sortUsingCJFBY(8000);
+    }
+
+    @Benchmark
     public int ndtGen8000() {
         return sortUsingNdt(8000);
     }
@@ -397,6 +482,11 @@ public abstract class AbstractDtlzZdtBenchmark extends AbstractBenchmark {
     @Benchmark
     public int jfbyGen9000() {
         return sortUsingJFBY(9000);
+    }
+
+    @Benchmark
+    public int cjfbyGen9000() {
+        return sortUsingCJFBY(9000);
     }
 
     @Benchmark
